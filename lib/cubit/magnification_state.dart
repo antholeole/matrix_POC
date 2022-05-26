@@ -8,11 +8,16 @@ abstract class MagnificationState {
 
   const MagnificationState(this.magnificationPosition);
 
-  T? on<T>({
-    OnMagnificationState<T, NewPositionMagnificationState>? onPosition,
-  }) {
-    if (this is NewPositionMagnificationState) {
-      return onPosition!(this as NewPositionMagnificationState);
+  T? on<T>(
+      {OnMagnificationState<T, NewPositionMagnificationState>? onPosition,
+      OnMagnificationState<T, GotPaintableImageMagnificationState>?
+          onPaintable}) {
+    if (this is NewPositionMagnificationState && onPosition != null) {
+      return onPosition(this as NewPositionMagnificationState);
+    }
+
+    if (this is GotPaintableImageMagnificationState && onPaintable != null) {
+      return onPaintable(this as GotPaintableImageMagnificationState);
     }
 
     return null;
@@ -21,10 +26,6 @@ abstract class MagnificationState {
 
 class NewPositionMagnificationState extends MagnificationState {
   const NewPositionMagnificationState(super.magnificationPosition);
-}
-
-class RenderableRegionMagificationState extends MagnificationState {
-  const RenderableRegionMagificationState(super.magnificationPosition);
 }
 
 class GotPaintableImageMagnificationState extends MagnificationState {

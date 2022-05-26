@@ -88,15 +88,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  magnifier:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: e14a472dd45f5a53f612abe2cc9d0c4b516a9dbc
-      url: "https://github.com/IsaacWallis/magnifier.git"
-    source: git
-    version: "0.0.5"
   matcher:
     dependency: transitive
     description:
