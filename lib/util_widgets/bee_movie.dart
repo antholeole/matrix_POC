@@ -1,4 +1,20 @@
-const beeMovie = '''
+import 'package:flutter/material.dart';
+
+class LoremIpsum extends StatelessWidget {
+  const LoremIpsum({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        child: const Text(
+          _beeMovie,
+          style: TextStyle(color: Colors.black),
+        ));
+  }
+}
+
+const _beeMovie = '''
 According to all known laws of aviation, there is no way a bee should be able to fly.
 Its wings are too small to get its fat little body off the ground.
 The bee, of course, flies anyway because bees don't care what humans think is impossible.

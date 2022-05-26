@@ -1,87 +1,55 @@
-import 'package:drag_demo/bee_movie.dart';
+import 'package:drag_demo/magnify_region.dart';
+import 'package:drag_demo/util_widgets/bee_movie.dart';
+import 'package:drag_demo/cubit/magnification_cubit.dart';
+import 'package:drag_demo/magnify.dart';
+import 'package:drag_demo/util_widgets/magnify_pointer.dart';
 import 'package:flutter/material.dart';
-import 'package:magnifier/magnifier.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'util_widgets/follow_pointer.dart';
 
+//around a 4x zoom
 const loupeSize = Size(200, 200);
+const magnifyRegionSize = Size(50, 50);
 
 void main() {
-  runApp(const Directionality(
-    textDirection: TextDirection.ltr,
-    child: MyApp(),
+  runApp(WidgetsApp(
+    builder: (context, __) => BlocProvider(
+        create: (_) => MagnificationCubit(
+              initalMagnificationPosition: Offset(
+                  (MediaQuery.of(context).size.width / 2) -
+                      (loupeSize.height / 2),
+                  (MediaQuery.of(context).size.height / 2) -
+                      (loupeSize.width / 2)),
+            ),
+        child: const MyApp()),
+    color: Colors.white,
   ));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  Offset loupePosition = Offset.zero;
-
-  @override
   Widget build(BuildContext context) {
+    final magnificationPosition =
+        context.watch<MagnificationCubit>().state.magnificationPosition;
+
     return Stack(children: [
       FollowPointer(
-          onPointerMove: (pointerPos) => setState(() {
-                loupePosition = Offset(pointerPos.dx - (loupeSize.width / 2),
-                    pointerPos.dy - (loupeSize.height / 2));
-              }),
+          onPointerMove: context.read<MagnificationCubit>().updatePosition,
           child: const LoremIpsum()),
       Positioned(
-        top: loupePosition.dy,
-        left: loupePosition.dx,
-        child: const Magnify(size: loupeSize),
-      )
+        top: magnificationPosition.dy -
+            loupeSize.height -
+            (magnifyRegionSize.height),
+        left: magnificationPosition.dx - (loupeSize.width / 2),
+        child: const MagnifyInterior(),
+      ),
+      Positioned(
+        top: magnificationPosition.dy - (magnifyRegionSize.height / 2),
+        left: magnificationPosition.dx - (magnifyRegionSize.width / 2),
+        child: const MagnifyPointer(),
+      ),
     ]);
-  }
-}
-
-class Magnify extends StatelessWidget {
-  final Size size;
-
-  const Magnify({super.key, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size.width,
-      height: size.height,
-      color: Colors.pink,
-    );
-  }
-}
-
-class FollowPointer extends StatelessWidget {
-  final Widget child;
-  final void Function(Offset newPosition) onPointerMove;
-
-  const FollowPointer(
-      {super.key, required this.onPointerMove, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Listener(
-      onPointerMove: (event) => onPointerMove(event.position),
-      onPointerUp: (event) => onPointerMove(event.position),
-      onPointerDown: (event) => onPointerMove(event.position),
-      child: child,
-    );
-  }
-}
-
-class LoremIpsum extends StatelessWidget {
-  const LoremIpsum({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        child: const Text(
-          beeMovie,
-          style: TextStyle(color: Colors.black),
-        ));
   }
 }
